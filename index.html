@@ -1,0 +1,3459 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Milionerzy</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .game-container {
+        max-width: 1200px;
+        width: 100%;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+        position: relative;
+      }
+
+      .million-counter {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: linear-gradient(135deg, #ffd700, #ffa500);
+        color: #1a1a2e;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-weight: bold;
+        font-size: 1.1em;
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+      }
+
+      .million-counter span {
+        font-size: 1.3em;
+        margin-left: 5px;
+      }
+
+      .logo {
+        font-size: 3em;
+        font-weight: bold;
+        background: linear-gradient(45deg, #ffd700, #ffa500);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        margin-bottom: 10px;
+      }
+
+      .rules-box {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        border: 2px solid rgba(255, 215, 0, 0.3);
+      }
+
+      .rules-box h3 {
+        color: #ffd700;
+        margin-bottom: 10px;
+      }
+
+      .rules-box ul {
+        list-style-position: inside;
+        line-height: 1.6;
+      }
+
+      .main-content {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .question-area {
+        flex: 2;
+        min-width: 300px;
+      }
+
+      .sidebar {
+        flex: 1;
+        min-width: 250px;
+      }
+
+      .current-prize {
+        background: linear-gradient(135deg, #ffd700, #ffa500);
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 2em;
+        font-weight: bold;
+        color: #1a1a2e;
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+      }
+
+      .question-box {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        border: 2px solid rgba(255, 215, 0, 0.3);
+      }
+
+      .question-number {
+        color: #ffd700;
+        font-size: 1.2em;
+        margin-bottom: 10px;
+      }
+
+      .question-text {
+        font-size: 1.4em;
+        margin-bottom: 30px;
+        line-height: 1.4;
+      }
+
+      .answers {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+      }
+
+      .answer-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 215, 0, 0.5);
+        color: white;
+        padding: 20px;
+        font-size: 1.1em;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-align: left;
+      }
+
+      .answer-btn:hover:not(:disabled) {
+        background: rgba(255, 215, 0, 0.2);
+        border-color: #ffd700;
+        transform: scale(1.05);
+      }
+
+      .answer-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .answer-btn.removed {
+        opacity: 0.3;
+        background: rgba(255, 0, 0, 0.2);
+      }
+
+      .answer-btn.correct {
+        background: rgba(0, 255, 0, 0.3);
+        border-color: #00ff00;
+      }
+
+      .answer-btn.wrong {
+        background: rgba(255, 0, 0, 0.3);
+        border-color: #ff0000;
+      }
+
+      .lifelines {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .lifeline-btn {
+        background: rgba(255, 215, 0, 0.2);
+        border: 2px solid #ffd700;
+        color: #ffd700;
+        padding: 15px 10px;
+        font-size: 0.9em;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-align: center;
+      }
+
+      .lifeline-btn:hover:not(:disabled) {
+        background: rgba(255, 215, 0, 0.4);
+        transform: scale(1.05);
+      }
+
+      .lifeline-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        border-color: #666;
+        color: #666;
+      }
+
+      .prize-ladder {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 15px;
+        border: 2px solid rgba(255, 215, 0, 0.3);
+      }
+
+      .prize-item {
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .prize-item.current {
+        background: rgba(255, 215, 0, 0.3);
+        border: 2px solid #ffd700;
+        font-weight: bold;
+      }
+
+      .prize-item.completed {
+        background: rgba(0, 255, 0, 0.2);
+        color: #90ee90;
+      }
+
+      .prize-item.guaranteed {
+        color: #ffd700;
+        font-weight: bold;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .action-btn {
+        flex: 1;
+        padding: 15px;
+        font-size: 1.1em;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+      }
+
+      .surrender-btn {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+        color: white;
+      }
+
+      .continue-btn {
+        background: linear-gradient(135deg, #51cf66, #37b24d);
+        color: white;
+      }
+
+      .action-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: linear-gradient(135deg, #1a1a2e, #0f0f1e);
+        padding: 40px;
+        border-radius: 20px;
+        max-width: 500px;
+        width: 90%;
+        border: 3px solid #ffd700;
+        text-align: center;
+      }
+
+      .modal-content h2 {
+        color: #ffd700;
+        margin-bottom: 20px;
+        font-size: 2em;
+      }
+
+      .modal-content p {
+        margin: 15px 0;
+        line-height: 1.6;
+        font-size: 1.1em;
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+      }
+
+      .modal-btn {
+        flex: 1;
+        padding: 15px;
+        font-size: 1.1em;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+      }
+
+      .modal-btn.cancel {
+        background: #666;
+        color: white;
+      }
+
+      .modal-btn.confirm {
+        background: linear-gradient(135deg, #ffd700, #ffa500);
+        color: #1a1a2e;
+      }
+
+      .modal-btn:hover {
+        transform: scale(1.05);
+      }
+
+      .audience-results {
+        margin: 20px 0;
+      }
+
+      .audience-bar {
+        margin: 10px 0;
+      }
+
+      .audience-bar-label {
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      .audience-bar-fill {
+        background: rgba(255, 215, 0, 0.3);
+        border-radius: 5px;
+        height: 30px;
+        position: relative;
+      }
+
+      .audience-bar-inner {
+        background: linear-gradient(90deg, #ffd700, #ffa500);
+        height: 100%;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #1a1a2e;
+        transition: width 0.5s;
+      }
+
+      .start-screen {
+        text-align: center;
+        padding: 50px;
+      }
+
+      .start-screen h1 {
+        font-size: 4em;
+        margin-bottom: 30px;
+        background: linear-gradient(45deg, #ffd700, #ffa500);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .start-btn {
+        padding: 20px 50px;
+        font-size: 1.5em;
+        background: linear-gradient(135deg, #ffd700, #ffa500);
+        color: #1a1a2e;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+      }
+
+      .start-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+      }
+
+      .game-over {
+        text-align: center;
+        padding: 50px;
+      }
+
+      .game-over h2 {
+        font-size: 3em;
+        margin-bottom: 20px;
+        color: #ffd700;
+      }
+
+      .final-prize {
+        font-size: 4em;
+        margin: 30px 0;
+        background: linear-gradient(45deg, #ffd700, #ffa500);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      @media (max-width: 768px) {
+        .answers {
+          grid-template-columns: 1fr;
+        }
+
+        .main-content {
+          flex-direction: column;
+        }
+
+        .logo {
+          font-size: 2em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="game-container">
+      <div class="header">
+        <div class="million-counter" id="millionCounter">
+          🏆 Miliony: <span id="millionCount">0</span>
+        </div>
+        <div class="logo">💰 MILIONERZY 💰</div>
+      </div>
+
+      <div id="startScreen" class="start-screen">
+        <div class="rules-box">
+          <h3>📋 Zasady Gry:</h3>
+          <ul>
+            <li>Odpowiedz na 12 pytań, aby wygrać 1 000 000 zł</li>
+            <li>
+              ⭐ Stawki gwarantowane: 1 000 zł (pytanie 2), 5 000 zł (pytanie 4)
+              i 40 000 zł (pytanie 7)
+            </li>
+            <li>Masz 5 kół ratunkowych - każde można użyć tylko raz</li>
+            <li>
+              Możesz się poddać przed odpowiedzią (od pytania 2) i zabrać
+              dotychczasową wygraną
+            </li>
+            <li>Błędna odpowiedź = spadek do ostatniej gwarantowanej kwoty</li>
+          </ul>
+        </div>
+        <button class="start-btn" onclick="startGame()">ROZPOCZNIJ GRĘ</button>
+      </div>
+
+      <div id="gameScreen" style="display: none">
+        <div class="main-content">
+          <div class="question-area">
+            <div class="current-prize" id="currentPrize">0 zł</div>
+
+            <div class="lifelines">
+              <button
+                class="lifeline-btn"
+                id="lifeline50"
+                onclick="showLifelineModal('50')"
+              >
+                50:50
+              </button>
+              <button
+                class="lifeline-btn"
+                id="lifelinePhone"
+                onclick="showLifelineModal('phone')"
+              >
+                📞 Telefon
+              </button>
+              <button
+                class="lifeline-btn"
+                id="lifelineAudience"
+                onclick="showLifelineModal('audience')"
+              >
+                👥 Publiczność
+              </button>
+              <button
+                class="lifeline-btn"
+                id="lifelineSwap"
+                onclick="showLifelineModal('swap')"
+              >
+                🔄 Zmiana
+              </button>
+              <button
+                class="lifeline-btn"
+                id="lifelineExpert"
+                onclick="showLifelineModal('expert')"
+              >
+                🎓 Ekspert
+              </button>
+            </div>
+
+            <div class="question-box">
+              <div class="question-number" id="questionNumber">
+                Pytanie 1 z 12
+              </div>
+              <div class="question-text" id="questionText"></div>
+              <div class="answers" id="answersContainer"></div>
+
+              <div style="text-align: center; margin-top: 20px">
+                <button
+                  class="action-btn surrender-btn"
+                  id="surrenderDuringQuestion"
+                  onclick="surrenderDuringQuestion()"
+                  style="display: none; width: auto; padding: 12px 30px"
+                >
+                  💰 Rezygnuję i zabieram pieniądze
+                </button>
+              </div>
+            </div>
+
+            <div
+              class="action-buttons"
+              id="actionButtons"
+              style="display: none"
+            >
+              <button class="action-btn surrender-btn" onclick="surrender()">
+                Rezygnuję i zabieram pieniądze
+              </button>
+              <button class="action-btn continue-btn" onclick="continueGame()">
+                Gram dalej!
+              </button>
+            </div>
+          </div>
+
+          <div class="sidebar">
+            <div class="prize-ladder" id="prizeLadder"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="gameOverScreen" class="game-over" style="display: none">
+        <h2 id="gameOverTitle"></h2>
+        <div class="final-prize" id="finalPrize"></div>
+        <p id="gameOverMessage"></p>
+        <button class="start-btn" onclick="location.reload()">
+          ZAGRAJ PONOWNIE
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal for Lifelines -->
+    <div id="lifelineModal" class="modal">
+      <div class="modal-content">
+        <h2 id="modalTitle"></h2>
+        <p id="modalDescription"></p>
+        <div id="modalExtra"></div>
+        <div class="modal-buttons">
+          <button class="modal-btn cancel" onclick="closeLifelineModal()">
+            Anuluj
+          </button>
+          <button
+            class="modal-btn confirm"
+            id="modalConfirmBtn"
+            onclick="useLifeline()"
+          >
+            Użyj koła ratunkowego
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const prizes = [
+        { amount: 500, guaranteed: false },
+        { amount: 1000, guaranteed: true },
+        { amount: 2000, guaranteed: false },
+        { amount: 5000, guaranteed: true },
+        { amount: 10000, guaranteed: false },
+        { amount: 20000, guaranteed: false },
+        { amount: 40000, guaranteed: true },
+        { amount: 75000, guaranteed: false },
+        { amount: 125000, guaranteed: false },
+        { amount: 250000, guaranteed: false },
+        { amount: 500000, guaranteed: false },
+        { amount: 1000000, guaranteed: false },
+      ];
+
+      const questionsByLevel = {
+        // Poziom 1 - 500 zł (bardzo łatwe)
+        1: [
+          {
+            question: "Ile nóg ma pająk?",
+            answers: ["6", "8", "10", "12"],
+            correct: 1,
+          },
+          {
+            question: "Które miasto jest stolicą Polski?",
+            answers: ["Kraków", "Gdańsk", "Warszawa", "Wrocław"],
+            correct: 2,
+          },
+          {
+            question:
+              "Jaki kolor powstaje z połączenia żółtego i niebieskiego?",
+            answers: ["Zielony", "Pomarańczowy", "Fioletowy", "Brązowy"],
+            correct: 0,
+          },
+          {
+            question: "Ile dni ma tydzień?",
+            answers: ["5", "6", "7", "8"],
+            correct: 2,
+          },
+          {
+            question: "Która pora roku następuje po zimie?",
+            answers: ["Lato", "Jesień", "Wiosna", "Zima"],
+            correct: 2,
+          },
+          {
+            question: "Ile boków ma kwadrat?",
+            answers: ["3", "4", "5", "6"],
+            correct: 1,
+          },
+          {
+            question: "Jaki owoc jest czerwony i rośnie na drzewie?",
+            answers: ["Banan", "Jabłko", "Ananas", "Arbuz"],
+            correct: 1,
+          },
+          {
+            question: "Ile palców ma człowiek u jednej ręki?",
+            answers: ["4", "5", "6", "10"],
+            correct: 1,
+          },
+          {
+            question: "Który zwierzak szczeka?",
+            answers: ["Kot", "Pies", "Krowa", "Koń"],
+            correct: 1,
+          },
+          {
+            question: "Ile miesięcy ma rok?",
+            answers: ["10", "11", "12", "13"],
+            correct: 2,
+          },
+          {
+            question: "Jaki kolor ma słońce?",
+            answers: ["Niebieski", "Zielony", "Żółty", "Czerwony"],
+            correct: 2,
+          },
+          {
+            question: "Gdzie mieszka papież?",
+            answers: ["W Paryżu", "W Rzymie", "W Madrycie", "W Atenach"],
+            correct: 1,
+          },
+          {
+            question: "Ile godzin ma doba?",
+            answers: ["12", "20", "24", "30"],
+            correct: 2,
+          },
+          {
+            question: "Który ocean jest największy?",
+            answers: ["Atlantycki", "Indyjski", "Spokojny", "Arktyczny"],
+            correct: 2,
+          },
+          {
+            question: "Jaki owoc jest żółty i wygięty?",
+            answers: ["Jabłko", "Banan", "Pomarańcza", "Gruszka"],
+            correct: 1,
+          },
+          {
+            question: "Która planeta jest najbliżej Słońca?",
+            answers: ["Wenus", "Ziemia", "Merkury", "Mars"],
+            correct: 2,
+          },
+          {
+            question: "Ile sezon ma rok?",
+            answers: ["2", "3", "4", "5"],
+            correct: 2,
+          },
+          {
+            question: "Jaki kolor ma trawa?",
+            answers: ["Żółty", "Niebieski", "Zielony", "Czerwony"],
+            correct: 2,
+          },
+          {
+            question: "W którym mieście stoi wieża Eiffla?",
+            answers: ["Londyn", "Berlin", "Paryż", "Rzym"],
+            correct: 2,
+          },
+          {
+            question: "Ile kół ma rower?",
+            answers: ["1", "2", "3", "4"],
+            correct: 1,
+          },
+          {
+            question: "Który dzień tygodnia jest pierwszy?",
+            answers: ["Poniedziałek", "Niedziela", "Sobota", "Wtorek"],
+            correct: 0,
+          },
+          {
+            question: "Jaki kształt ma koło?",
+            answers: ["Kwadratowy", "Trójkątny", "Okrągły", "Prostokątny"],
+            correct: 2,
+          },
+          {
+            question: "Ile liter ma alfabet polski?",
+            answers: ["26", "28", "30", "32"],
+            correct: 3,
+          },
+          {
+            question: "Który posiłek jemy rano?",
+            answers: ["Obiad", "Kolacja", "Śniadanie", "Podwieczorek"],
+            correct: 2,
+          },
+          {
+            question: "Jaki kolor ma niebo w pogodny dzień?",
+            answers: ["Zielony", "Niebieski", "Czerwony", "Żółty"],
+            correct: 1,
+          },
+        ],
+
+        // Poziom 2 - 1000 zł (łatwe)
+        2: [
+          {
+            question: "Kto napisał 'Pan Tadeusz'?",
+            answers: [
+              "Juliusz Słowacki",
+              "Adam Mickiewicz",
+              "Henryk Sienkiewicz",
+              "Bolesław Prus",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Ile kontynentów jest na Ziemi?",
+            answers: ["5", "6", "7", "8"],
+            correct: 2,
+          },
+          {
+            question: "Który metal jest najlżejszy?",
+            answers: ["Lit", "Aluminium", "Tytan", "Magnez"],
+            correct: 0,
+          },
+          {
+            question: "W którym roku Polska odzyskała niepodległość?",
+            answers: ["1914", "1918", "1920", "1945"],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi pierwiastek kwadratowy z 16?",
+            answers: ["2", "4", "6", "8"],
+            correct: 1,
+          },
+          {
+            question: "Który ocean otacza Polskę?",
+            answers: ["Żaden", "Atlantycki", "Spokojny", "Indyjski"],
+            correct: 0,
+          },
+          {
+            question: "Kto był pierwszym królem Polski?",
+            answers: [
+              "Mieszko I",
+              "Bolesław Chrobry",
+              "Kazimierz Wielki",
+              "Władysław Łokietek",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi suma kątów w trójkącie?",
+            answers: ["90°", "180°", "270°", "360°"],
+            correct: 1,
+          },
+          {
+            question: "Która rzeka przepływa przez Warszawę?",
+            answers: ["Odra", "Wisła", "Warta", "Bug"],
+            correct: 1,
+          },
+          {
+            question: "W którym wieku żył Mikołaj Kopernik?",
+            answers: ["XIV", "XV", "XVI", "XVII"],
+            correct: 2,
+          },
+          {
+            question: "Ile planet jest w Układzie Słonecznym?",
+            answers: ["7", "8", "9", "10"],
+            correct: 1,
+          },
+          {
+            question: "Kto namalował 'Mona Lisę'?",
+            answers: [
+              "Michał Anioł",
+              "Leonardo da Vinci",
+              "Rafael",
+              "Donatello",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Która góra jest najwyższa w Polsce?",
+            answers: ["Giewont", "Kasprowy Wierch", "Rysy", "Śnieżka"],
+            correct: 2,
+          },
+          {
+            question: "Ile stron świata jest?",
+            answers: ["2", "4", "6", "8"],
+            correct: 1,
+          },
+          {
+            question: "Który gaz jest niezbędny do oddychania?",
+            answers: ["Azot", "Tlen", "Wodór", "Dwutlenek węgla"],
+            correct: 1,
+          },
+          {
+            question: "W którym roku rozpoczęła się II wojna światowa?",
+            answers: ["1938", "1939", "1940", "1941"],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi liczba Pi w przybliżeniu?",
+            answers: ["2,14", "3,14", "4,14", "5,14"],
+            correct: 1,
+          },
+          {
+            question: "Który z tych zwierząt jest ssakiem?",
+            answers: ["Rekin", "Pingwin", "Delfin", "Krokodyl"],
+            correct: 2,
+          },
+          {
+            question: "Ile wynosi 10% z 200?",
+            answers: ["10", "20", "30", "40"],
+            correct: 1,
+          },
+          {
+            question: "Który pierwiastek ma symbol H?",
+            answers: ["Hel", "Wodór", "Hafn", "Holmium"],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi 5 x 6?",
+            answers: ["25", "30", "35", "40"],
+            correct: 1,
+          },
+          {
+            question: "W którym roku człowiek wylądował na Księżycu?",
+            answers: ["1965", "1967", "1969", "1971"],
+            correct: 2,
+          },
+          {
+            question: "Który ocean jest najmniejszy?",
+            answers: ["Arktyczny", "Indyjski", "Atlantycki", "Spokojny"],
+            correct: 0,
+          },
+          {
+            question: "Ile kości ma człowiek dorosły?",
+            answers: ["186", "196", "206", "216"],
+            correct: 2,
+          },
+          {
+            question: "Który kraj ma największą powierzchnię?",
+            answers: ["Kanada", "Chiny", "USA", "Rosja"],
+            correct: 3,
+          },
+        ],
+
+        // Poziom 3 - 2000 zł
+        3: [
+          {
+            question: "Kto namalował 'Damę z gronostajem'?",
+            answers: [
+              "Leonardo da Vinci",
+              "Michał Anioł",
+              "Rafael",
+              "Rembrandt",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Który pierwiastek chemiczny ma symbol 'Au'?",
+            answers: ["Srebro", "Złoto", "Aluminium", "Arsen"],
+            correct: 1,
+          },
+          {
+            question: "Jakie jest największe jezioro w Polsce?",
+            answers: ["Mamry", "Wigry", "Śniardwy", "Hańcza"],
+            correct: 2,
+          },
+          {
+            question: "W którym roku upadł Mur Berliński?",
+            answers: ["1987", "1989", "1991", "1993"],
+            correct: 1,
+          },
+          {
+            question: "Ile chromosomów ma człowiek?",
+            answers: ["23", "46", "48", "92"],
+            correct: 1,
+          },
+          {
+            question: "Który metal jest najcięższy w warunkach naturalnych?",
+            answers: ["Uran", "Pluton", "Osm", "Wolfram"],
+            correct: 2,
+          },
+          {
+            question: "Kto odkrył penicylinę?",
+            answers: [
+              "Louis Pasteur",
+              "Alexander Fleming",
+              "Robert Koch",
+              "Marie Curie",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi prędkość światła?",
+            answers: [
+              "200 000 km/s",
+              "300 000 km/s",
+              "400 000 km/s",
+              "500 000 km/s",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Który ocean jest najgłębszy?",
+            answers: ["Atlantycki", "Indyjski", "Spokojny", "Arktyczny"],
+            correct: 2,
+          },
+          {
+            question: "W którym roku odkryto Amerykę?",
+            answers: ["1452", "1492", "1502", "1512"],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi temperatura wrzenia wody na poziomie morza?",
+            answers: ["90°C", "95°C", "100°C", "105°C"],
+            correct: 2,
+          },
+          {
+            question: "Który kraj ma najdłuższą linię brzegową?",
+            answers: ["Rosja", "Kanada", "Australia", "Norwegia"],
+            correct: 1,
+          },
+          {
+            question: "Kto był autorem 'Trylogii'?",
+            answers: [
+              "Bolesław Prus",
+              "Henryk Sienkiewicz",
+              "Stefan Żeromski",
+              "Władysław Reymont",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi masa Ziemi w kilogramach?",
+            answers: [
+              "5,97 × 10²⁴",
+              "6,97 × 10²⁴",
+              "7,97 × 10²⁴",
+              "8,97 × 10²⁴",
+            ],
+            correct: 0,
+          },
+          {
+            question: "W którym roku Polska wstąpiła do UE?",
+            answers: ["2002", "2003", "2004", "2005"],
+            correct: 2,
+          },
+          {
+            question:
+              "Który pierwiastek ma największą liczbę atomową w naturze?",
+            answers: ["Radon", "Uran", "Pluton", "Neptun"],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi suma stopni wewnętrznych w pięciokącie?",
+            answers: ["360°", "450°", "540°", "630°"],
+            correct: 2,
+          },
+          {
+            question: "Kto napisał 'Ferdydurke'?",
+            answers: [
+              "Witold Gombrowicz",
+              "Bruno Schulz",
+              "Stanisław Lem",
+              "Czesław Miłosz",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Który z tych krajów nie graniczy z Polską?",
+            answers: ["Czechy", "Słowacja", "Ukraina", "Węgry"],
+            correct: 3,
+          },
+          {
+            question: "Ile wynosi 25% z 400?",
+            answers: ["80", "90", "100", "110"],
+            correct: 2,
+          },
+          {
+            question: "W którym roku odbył się chrzest Polski?",
+            answers: ["956", "966", "976", "986"],
+            correct: 1,
+          },
+          {
+            question: "Która planeta ma najwięcej księżyców?",
+            answers: ["Jowisz", "Saturn", "Uran", "Neptun"],
+            correct: 1,
+          },
+          {
+            question: "Kto był pierwszym prezydentem USA?",
+            answers: [
+              "Thomas Jefferson",
+              "Benjamin Franklin",
+              "George Washington",
+              "John Adams",
+            ],
+            correct: 2,
+          },
+          {
+            question: "Ile wynosi pierwiastek sześcienny z 64?",
+            answers: ["2", "4", "6", "8"],
+            correct: 1,
+          },
+          {
+            question: "W którym roku zakończyła się I wojna światowa?",
+            answers: ["1917", "1918", "1919", "1920"],
+            correct: 1,
+          },
+        ],
+
+        // Poziom 4 - 5000 zł
+        4: [
+          {
+            question: "Kto był autorem powieści 'Lalka'?",
+            answers: [
+              "Bolesław Prus",
+              "Henryk Sienkiewicz",
+              "Adam Mickiewicz",
+              "Juliusz Słowacki",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Który z tych pierwiastków jest metaloidem?",
+            answers: ["Glin", "Krzem", "Fosfor", "Siarka"],
+            correct: 1,
+          },
+          {
+            question: "W którym roku podpisano traktat wersalski?",
+            answers: ["1918", "1919", "1920", "1921"],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi konstanta grawitacyjna G?",
+            answers: [
+              "6,67 × 10⁻¹¹",
+              "6,67 × 10⁻¹⁰",
+              "6,67 × 10⁻¹²",
+              "6,67 × 10⁻⁹",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Który z tych filozofów był starożytnym Grekiem?",
+            answers: ["Descartes", "Kant", "Sokrates", "Hegel"],
+            correct: 2,
+          },
+          {
+            question: "Ile wynosi liczba Avogadro?",
+            answers: [
+              "6,022 × 10²³",
+              "6,022 × 10²⁴",
+              "6,022 × 10²²",
+              "6,022 × 10²⁵",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Kto napisał 'Boską Komedię'?",
+            answers: ["Petrarka", "Boccaccio", "Dante Alighieri", "Ariosto"],
+            correct: 2,
+          },
+          {
+            question: "W którym roku rozpoczęła się rewolucja francuska?",
+            answers: ["1789", "1799", "1809", "1819"],
+            correct: 0,
+          },
+          {
+            question:
+              "Która cząstka elementarna została odkryta w CERN w 2012 roku?",
+            answers: ["Kwark", "Neutrino", "Bozon Higgsa", "Gluon"],
+            correct: 2,
+          },
+          {
+            question: "Ile wynosi okres półtrwania węgla-14?",
+            answers: ["5730 lat", "6730 lat", "7730 lat", "8730 lat"],
+            correct: 0,
+          },
+          {
+            question: "Kto skomponował 'Symfonię Księżycową'?",
+            answers: ["Mozart", "Beethoven", "Bach", "Chopin"],
+            correct: 1,
+          },
+          {
+            question: "W którym roku odkryto strukturę DNA?",
+            answers: ["1951", "1952", "1953", "1954"],
+            correct: 2,
+          },
+          {
+            question: "Który z tych pisarzy otrzymał Nagrodę Nobla?",
+            answers: [
+              "Witold Gombrowicz",
+              "Czesław Miłosz",
+              "Stanisław Lem",
+              "Tadeusz Konwicki",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi promień Ziemi na równiku?",
+            answers: ["6378 km", "6478 km", "6578 km", "6678 km"],
+            correct: 0,
+          },
+          {
+            question: "Który malarz był przedstawicielem kubizmu?",
+            answers: [
+              "Vincent van Gogh",
+              "Claude Monet",
+              "Pablo Picasso",
+              "Salvador Dalí",
+            ],
+            correct: 2,
+          },
+          {
+            question: "W którym roku Napoleon został cesarzem Francji?",
+            answers: ["1802", "1804", "1806", "1808"],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi stała Plancka?",
+            answers: [
+              "6,626 × 10⁻³⁴",
+              "6,626 × 10⁻³³",
+              "6,626 × 10⁻³⁵",
+              "6,626 × 10⁻³²",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Kto odkrył promieniotwórczość?",
+            answers: [
+              "Marie Curie",
+              "Henri Becquerel",
+              "Ernest Rutherford",
+              "Niels Bohr",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku upadła Konstantynopol?",
+            answers: ["1453", "1463", "1473", "1483"],
+            correct: 0,
+          },
+          {
+            question: "Który z tych organizmów ma najwięcej chromosomów?",
+            answers: ["Człowiek", "Pies", "Paproć królewska", "Szympans"],
+            correct: 2,
+          },
+          {
+            question: "Kto napisał 'Metamorfozę'?",
+            answers: [
+              "Thomas Mann",
+              "Franz Kafka",
+              "Hermann Hesse",
+              "Robert Musil",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi gęstość wody w temperaturze 4°C?",
+            answers: [
+              "0,999 g/cm³",
+              "1,000 g/cm³",
+              "1,001 g/cm³",
+              "1,002 g/cm³",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku odkryto elektron?",
+            answers: ["1895", "1897", "1899", "1901"],
+            correct: 1,
+          },
+          {
+            question: "Który z tych kompozytorów należał do epoki baroku?",
+            answers: ["Mozart", "Beethoven", "Bach", "Brahms"],
+            correct: 2,
+          },
+          {
+            question: "Ile wynosi masa Słońca w kilogramach?",
+            answers: [
+              "1,99 × 10³⁰",
+              "2,99 × 10³⁰",
+              "3,99 × 10³⁰",
+              "4,99 × 10³⁰",
+            ],
+            correct: 0,
+          },
+        ],
+
+        // Poziom 5 - 10000 zł
+        5: [
+          {
+            question:
+              "W którym roku odbyły się pierwsze nowożytne Igrzyska Olimpijskie?",
+            answers: ["1892", "1896", "1900", "1904"],
+            correct: 1,
+          },
+          {
+            question:
+              "Który z tych pierwiastków ma najwyższą temperaturę topnienia?",
+            answers: ["Wolfram", "Węgiel", "Osm", "Ren"],
+            correct: 0,
+          },
+          {
+            question: "Kto był założycielem psychoanalizy?",
+            answers: [
+              "Carl Jung",
+              "Sigmund Freud",
+              "Alfred Adler",
+              "Jacques Lacan",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku odkryto promieniowanie kosmiczne?",
+            answers: ["1910", "1912", "1914", "1916"],
+            correct: 1,
+          },
+          {
+            question:
+              "Ile wynosi suma szeregu harmonicznego 1/2 + 1/4 + 1/8 + ... w nieskończoność?",
+            answers: ["0,5", "1", "2", "Nieskończoność"],
+            correct: 1,
+          },
+          {
+            question: "Który z tych polskich królów był Wazą?",
+            answers: [
+              "Stefan Batory",
+              "Zygmunt III",
+              "Jan III Sobieski",
+              "Stanisław August",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Kto napisał 'W pustyni i w puszczy'?",
+            answers: [
+              "Bolesław Prus",
+              "Henryk Sienkiewicz",
+              "Juliusz Verne",
+              "Karol May",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi entalpia parowania wody?",
+            answers: [
+              "40,7 kJ/mol",
+              "41,7 kJ/mol",
+              "42,7 kJ/mol",
+              "43,7 kJ/mol",
+            ],
+            correct: 0,
+          },
+          {
+            question: "W którym roku Albert Einstein otrzymał Nagrodę Nobla?",
+            answers: ["1919", "1921", "1923", "1925"],
+            correct: 1,
+          },
+          {
+            question:
+              "Który z tych filozofów napisał 'Krytykę czystego rozumu'?",
+            answers: ["Hegel", "Kant", "Fichte", "Schelling"],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi odległość Ziemia-Słońce (1 AU)?",
+            answers: [
+              "149,6 mln km",
+              "159,6 mln km",
+              "169,6 mln km",
+              "179,6 mln km",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Kto namalował 'Krzyk'?",
+            answers: [
+              "Vincent van Gogh",
+              "Edvard Munch",
+              "Paul Gauguin",
+              "Henri Matisse",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku odkryto neutron?",
+            answers: ["1930", "1932", "1934", "1936"],
+            correct: 1,
+          },
+          {
+            question: "Który z tych kompozytorów napisał 'Pory roku'?",
+            answers: ["Bach", "Vivaldi", "Handel", "Telemann"],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi najdłuższy okres półtrwania znanego izotopu?",
+            answers: ["10¹⁹ lat", "10²⁰ lat", "10²¹ lat", "10²² lat"],
+            correct: 0,
+          },
+          {
+            question: "Kto był pierwszym człowiekiem w kosmosie?",
+            answers: [
+              "Neil Armstrong",
+              "Jurij Gagarin",
+              "Alan Shepard",
+              "John Glenn",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku powstała Liga Narodów?",
+            answers: ["1918", "1919", "1920", "1921"],
+            correct: 2,
+          },
+          {
+            question: "Który z tych pierwiastków jest najbardziej reaktywny?",
+            answers: ["Fluor", "Chlor", "Brom", "Jod"],
+            correct: 0,
+          },
+          {
+            question: "Kto napisał 'Proces'?",
+            answers: [
+              "Thomas Mann",
+              "Franz Kafka",
+              "Hermann Hesse",
+              "Robert Musil",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi masa protonu w jednostkach atomowych?",
+            answers: ["1,007 u", "1,008 u", "1,009 u", "1,010 u"],
+            correct: 1,
+          },
+          {
+            question: "W którym roku odkryto promieniowanie Hawkinga?",
+            answers: ["1972", "1974", "1976", "1978"],
+            correct: 1,
+          },
+          {
+            question:
+              "Który z tych matematyków udowodnił Wielkie Twierdzenie Fermata?",
+            answers: [
+              "Andrew Wiles",
+              "Grigori Perelman",
+              "Terence Tao",
+              "Peter Scholze",
+            ],
+            correct: 0,
+          },
+          {
+            question: "W którym roku proklamowano niepodległość USA?",
+            answers: ["1774", "1775", "1776", "1777"],
+            correct: 2,
+          },
+          {
+            question: "Ile wynosi prędkość dźwięku w powietrzu w 20°C?",
+            answers: ["333 m/s", "343 m/s", "353 m/s", "363 m/s"],
+            correct: 1,
+          },
+          {
+            question: "Kto był autorem 'Republiki'?",
+            answers: ["Sokrates", "Platon", "Arystoteles", "Epikur"],
+            correct: 1,
+          },
+        ],
+
+        // Poziom 6 - 20000 zł
+        6: [
+          {
+            question: "Jak nazywa się najbliższa Ziemi gwiazda po Słońcu?",
+            answers: [
+              "Alpha Centauri",
+              "Proxima Centauri",
+              "Syriusz",
+              "Betelgeuse",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku odkryto radioaktywność?",
+            answers: ["1894", "1896", "1898", "1900"],
+            correct: 1,
+          },
+          {
+            question: "Który z tych filozofów był empirystą?",
+            answers: ["Descartes", "Leibniz", "Spinoza", "Hume"],
+            correct: 3,
+          },
+          {
+            question: "Ile wynosi ładunek elektronu?",
+            answers: [
+              "1,602 × 10⁻¹⁹ C",
+              "1,602 × 10⁻¹⁸ C",
+              "1,602 × 10⁻²⁰ C",
+              "1,602 × 10⁻¹⁷ C",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Kto napisał 'Ulissesa'?",
+            answers: [
+              "James Joyce",
+              "Virginia Woolf",
+              "T.S. Eliot",
+              "Ezra Pound",
+            ],
+            correct: 0,
+          },
+          {
+            question: "W którym roku odkryto Plutona?",
+            answers: ["1928", "1930", "1932", "1934"],
+            correct: 1,
+          },
+          {
+            question: "Który z tych malary był przedstawicielem surrealizmu?",
+            answers: [
+              "Pablo Picasso",
+              "Salvador Dalí",
+              "Henri Matisse",
+              "Wassily Kandinsky",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi temperatura absolutnego zera?",
+            answers: ["-273,15°C", "-273,16°C", "-273,17°C", "-273,18°C"],
+            correct: 0,
+          },
+          {
+            question: "Kto był autorem teorii względności?",
+            answers: [
+              "Isaac Newton",
+              "Albert Einstein",
+              "Niels Bohr",
+              "Max Planck",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku odkryto superprzewodnictwo?",
+            answers: ["1909", "1911", "1913", "1915"],
+            correct: 1,
+          },
+          {
+            question:
+              "Który z tych kompozytorów należał do Szkoły Wiedeńskiej?",
+            answers: [
+              "Gustav Mahler",
+              "Arnold Schönberg",
+              "Richard Strauss",
+              "Anton Bruckner",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi masa neutronu?",
+            answers: [
+              "1,674 × 10⁻²⁷ kg",
+              "1,675 × 10⁻²⁷ kg",
+              "1,676 × 10⁻²⁷ kg",
+              "1,677 × 10⁻²⁷ kg",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Kto napisał 'Czarodziejską górę'?",
+            answers: [
+              "Hermann Hesse",
+              "Thomas Mann",
+              "Franz Kafka",
+              "Robert Musil",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku odkryto antyproton?",
+            answers: ["1953", "1955", "1957", "1959"],
+            correct: 1,
+          },
+          {
+            question: "Który z tych polskich poetów był noblista?",
+            answers: [
+              "Zbigniew Herbert",
+              "Czesław Miłosz",
+              "Tadeusz Różewicz",
+              "Wisława Szymborska",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi promień Bohra?",
+            answers: ["0,529 Å", "0,539 Å", "0,549 Å", "0,559 Å"],
+            correct: 0,
+          },
+          {
+            question: "Kto odkrył kwas nukleinowy?",
+            answers: [
+              "Friedrich Miescher",
+              "Gregor Mendel",
+              "Charles Darwin",
+              "Louis Pasteur",
+            ],
+            correct: 0,
+          },
+          {
+            question: "W którym roku rozpoczęła się wojna stuletnia?",
+            answers: ["1337", "1347", "1357", "1367"],
+            correct: 0,
+          },
+          {
+            question: "Który z tych filozofów był fenomenologiem?",
+            answers: [
+              "Edmund Husserl",
+              "Martin Heidegger",
+              "Jean-Paul Sartre",
+              "Maurice Merleau-Ponty",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Ile wynosi stała Boltzmanna?",
+            answers: [
+              "1,380 × 10⁻²³",
+              "1,381 × 10⁻²³",
+              "1,382 × 10⁻²³",
+              "1,383 × 10⁻²³",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Kto namalował 'Guernicę'?",
+            answers: [
+              "Joan Miró",
+              "Pablo Picasso",
+              "Salvador Dalí",
+              "Juan Gris",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku odkryto pozytrony?",
+            answers: ["1930", "1932", "1934", "1936"],
+            correct: 1,
+          },
+          {
+            question:
+              "Który z tych kompozytorów napisał 'Pierścień Nibelunga'?",
+            answers: ["Wagner", "Verdi", "Puccini", "Strauss"],
+            correct: 0,
+          },
+          {
+            question: "Ile wynosi promień Schwarzschilda Ziemi?",
+            answers: ["8,87 mm", "9,87 mm", "10,87 mm", "11,87 mm"],
+            correct: 0,
+          },
+          {
+            question: "Kto napisał 'Biesy'?",
+            answers: [
+              "Lew Tołstoj",
+              "Fiodor Dostojewski",
+              "Anton Czechow",
+              "Iwan Turgieniew",
+            ],
+            correct: 1,
+          },
+        ],
+
+        // Poziom 7 - 40000 zł (gwarantowana)
+        7: [
+          {
+            question: "W którym roku odkryto kwarki?",
+            answers: ["1964", "1966", "1968", "1970"],
+            correct: 0,
+          },
+          {
+            question:
+              "Który z tych filozofów był prekursorem egzystencjalizmu?",
+            answers: [
+              "Søren Kierkegaard",
+              "Friedrich Nietzsche",
+              "Martin Heidegger",
+              "Jean-Paul Sartre",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Ile wynosi stała struktury subtelnej?",
+            answers: ["1/135", "1/136", "1/137", "1/138"],
+            correct: 2,
+          },
+          {
+            question: "Kto napisał 'Poszukiwanie straconego czasu'?",
+            answers: [
+              "Marcel Proust",
+              "André Gide",
+              "Paul Valéry",
+              "Louis-Ferdinand Céline",
+            ],
+            correct: 0,
+          },
+          {
+            question: "W którym roku odkryto kwark top?",
+            answers: ["1993", "1994", "1995", "1996"],
+            correct: 2,
+          },
+          {
+            question: "Który z tych matematyków wprowadził pojęcie zbioru?",
+            answers: [
+              "Georg Cantor",
+              "Gottlob Frege",
+              "Bertrand Russell",
+              "David Hilbert",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Ile wynosi temperatura Plancka?",
+            answers: [
+              "1,416 × 10³²",
+              "1,416 × 10³³",
+              "1,416 × 10³⁴",
+              "1,416 × 10³⁵",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Kto namalował 'Ogród rozkoszy ziemskich'?",
+            answers: [
+              "Pieter Bruegel",
+              "Hieronymus Bosch",
+              "Jan van Eyck",
+              "Rogier van der Weyden",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku odkryto neutrino taonowe?",
+            answers: ["1998", "2000", "2002", "2004"],
+            correct: 1,
+          },
+          {
+            question:
+              "Który z tych kompozytorów był przedstawicielem minimalizmu?",
+            answers: [
+              "Philip Glass",
+              "John Cage",
+              "Karlheinz Stockhausen",
+              "Pierre Boulez",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Ile wynosi długość Plancka?",
+            answers: [
+              "1,616 × 10⁻³⁵",
+              "1,616 × 10⁻³⁴",
+              "1,616 × 10⁻³⁶",
+              "1,616 × 10⁻³³",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Kto napisał 'Człowieka bez właściwości'?",
+            answers: [
+              "Hermann Broch",
+              "Robert Musil",
+              "Thomas Mann",
+              "Hermann Hesse",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku odkryto asymptotyczną wolność?",
+            answers: ["1971", "1972", "1973", "1974"],
+            correct: 2,
+          },
+          {
+            question:
+              "Który z tych filozofów był przedstawicielem strukturalizmu?",
+            answers: [
+              "Claude Lévi-Strauss",
+              "Jacques Derrida",
+              "Michel Foucault",
+              "Gilles Deleuze",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Ile wynosi masa Plancka?",
+            answers: [
+              "2,176 × 10⁻⁸",
+              "2,177 × 10⁻⁸",
+              "2,178 × 10⁻⁸",
+              "2,179 × 10⁻⁸",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Kto namalował 'Las Meninas'?",
+            answers: [
+              "El Greco",
+              "Diego Velázquez",
+              "Francisco Goya",
+              "Bartolomé Murillo",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku odkryto bozony W i Z?",
+            answers: ["1981", "1982", "1983", "1984"],
+            correct: 2,
+          },
+          {
+            question: "Który z tych poetów był twórcą haiku?",
+            answers: [
+              "Matsuo Bashō",
+              "Kobayashi Issa",
+              "Yosa Buson",
+              "Masaoka Shiki",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Ile wynosi czas Plancka?",
+            answers: [
+              "5,391 × 10⁻⁴⁴",
+              "5,392 × 10⁻⁴⁴",
+              "5,393 × 10⁻⁴⁴",
+              "5,394 × 10⁻⁴⁴",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Kto napisał 'Śmierć w Wenecji'?",
+            answers: [
+              "Hermann Hesse",
+              "Thomas Mann",
+              "Franz Kafka",
+              "Stefan Zweig",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku odkryto neutrina oscylacje?",
+            answers: ["1996", "1998", "2000", "2002"],
+            correct: 1,
+          },
+          {
+            question: "Który z tych kompozytorów napisał 'Wozzecka'?",
+            answers: [
+              "Alban Berg",
+              "Anton Webern",
+              "Arnold Schönberg",
+              "Paul Hindemith",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Ile wynosi promień klasyczny elektronu?",
+            answers: [
+              "2,817 × 10⁻¹⁵",
+              "2,818 × 10⁻¹⁵",
+              "2,819 × 10⁻¹⁵",
+              "2,820 × 10⁻¹⁵",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Kto namalował 'Rzeź niewiniątek'?",
+            answers: [
+              "Caravaggio",
+              "Peter Paul Rubens",
+              "Nicolas Poussin",
+              "Guido Reni",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku odkryto pentakwarki?",
+            answers: ["2013", "2014", "2015", "2016"],
+            correct: 2,
+          },
+        ],
+
+        // Poziom 8 - 75000 zł
+        8: [
+          {
+            question: "Który kraj ma najwięcej wysp na świecie?",
+            answers: ["Norwegia", "Indonezja", "Szwecja", "Filipiny"],
+            correct: 2,
+          },
+          {
+            question: "Kto wyreżyserował film 'Siedem'?",
+            answers: [
+              "Quentin Tarantino",
+              "David Fincher",
+              "Christopher Nolan",
+              "Martin Scorsese",
+            ],
+            correct: 1,
+          },
+          {
+            question:
+              "W którym mieście znajduje się słynna Opera w kształcie muszli?",
+            answers: ["Melbourne", "Sydney", "Auckland", "Wellington"],
+            correct: 1,
+          },
+          {
+            question:
+              "Który metal jest najlepszym przewodnikiem elektryczności?",
+            answers: ["Złoto", "Srebro", "Miedź", "Aluminium"],
+            correct: 1,
+          },
+          {
+            question: "Kto napisał 'Mistrza i Małgorzatę'?",
+            answers: [
+              "Fiodor Dostojewski",
+              "Lew Tołstoj",
+              "Michaił Bułhakow",
+              "Anton Czechow",
+            ],
+            correct: 2,
+          },
+          {
+            question: "Ile wynosi 15% z 600?",
+            answers: ["80", "85", "90", "95"],
+            correct: 2,
+          },
+          {
+            question: "W którym roku zakończyła się I wojna światowa?",
+            answers: ["1917", "1918", "1919", "1920"],
+            correct: 1,
+          },
+          {
+            question: "Która planeta ma największą ilość księżyców?",
+            answers: ["Saturn", "Jowisz", "Uran", "Neptun"],
+            correct: 0,
+          },
+          {
+            question: "Kto namalował 'Gwiaździstą noc'?",
+            answers: [
+              "Claude Monet",
+              "Vincent van Gogh",
+              "Pablo Picasso",
+              "Salvador Dalí",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Jak nazywa się stolica Australii?",
+            answers: ["Sydney", "Melbourne", "Canberra", "Brisbane"],
+            correct: 2,
+          },
+          {
+            question: "W którym roku Polska wstąpiła do NATO?",
+            answers: ["1997", "1999", "2001", "2004"],
+            correct: 1,
+          },
+          {
+            question: "Który ocean jest najsłodszy (ma najmniej soli)?",
+            answers: ["Spokojny", "Atlantycki", "Indyjski", "Arktyczny"],
+            correct: 3,
+          },
+          {
+            question: "Kto skomponował 'Cztery pory roku'?",
+            answers: ["Bach", "Vivaldi", "Mozart", "Beethoven"],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi suma kątów w czworokącie?",
+            answers: ["180°", "270°", "360°", "450°"],
+            correct: 2,
+          },
+          {
+            question:
+              "W którym mieście odbyły się pierwsze Igrzyska Olimpijskie ery nowożytnej?",
+            answers: ["Paryż", "Ateny", "Londyn", "Rzym"],
+            correct: 1,
+          },
+          {
+            question: "Który pierwiastek jest najlżejszy?",
+            answers: ["Hel", "Wodór", "Lit", "Beryl"],
+            correct: 1,
+          },
+          {
+            question: "Kto napisał 'Nad Niemnem'?",
+            answers: [
+              "Henryk Sienkiewicz",
+              "Eliza Orzeszkowa",
+              "Bolesław Prus",
+              "Maria Konopnicka",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku upadła Konstantynopol?",
+            answers: ["1453", "1492", "1517", "1571"],
+            correct: 0,
+          },
+          {
+            question: "Ile kroków ma oktawa muzyczna?",
+            answers: ["5", "6", "7", "8"],
+            correct: 3,
+          },
+          {
+            question: "Która rzeka jest najdłuższa w Europie?",
+            answers: ["Dunaj", "Ren", "Wołga", "Wisła"],
+            correct: 2,
+          },
+          {
+            question: "Kto wynalazł żarówkę?",
+            answers: [
+              "Nikola Tesla",
+              "Thomas Edison",
+              "Alexander Graham Bell",
+              "Benjamin Franklin",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym kraju znajduje się Wielki Kanion?",
+            answers: ["Meksyk", "Kanada", "USA", "Australia"],
+            correct: 2,
+          },
+          {
+            question: "Który metal jest płynny w temperaturze pokojowej?",
+            answers: ["Gal", "Rtęć", "Cez", "Rubid"],
+            correct: 1,
+          },
+          {
+            question: "Kto był pierwszym człowiekiem w kosmosie?",
+            answers: [
+              "Neil Armstrong",
+              "Jurij Gagarin",
+              "Alan Shepard",
+              "John Glenn",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku odkryto Amerykę?",
+            answers: ["1452", "1492", "1512", "1542"],
+            correct: 1,
+          },
+        ],
+
+        // Poziom 9 - 125000 zł
+        9: [
+          {
+            question: "Który kraj ma najdłuższą linię brzegową na świecie?",
+            answers: ["Rosja", "Kanada", "Indonezja", "Norwegia"],
+            correct: 1,
+          },
+          {
+            question: "Kto napisał 'Proces'?",
+            answers: [
+              "Thomas Mann",
+              "Franz Kafka",
+              "Hermann Hesse",
+              "Stefan Zweig",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku odbyła się bitwa pod Grunwaldem?",
+            answers: ["1410", "1420", "1430", "1440"],
+            correct: 0,
+          },
+          {
+            question: "Ile kości ma dorosły człowiek?",
+            answers: ["196", "206", "216", "226"],
+            correct: 1,
+          },
+          {
+            question: "Który z tych krajów nie ma dostępu do morza?",
+            answers: ["Paragwaj", "Urugwaj", "Chile", "Peru"],
+            correct: 0,
+          },
+          {
+            question: "Kto namalował 'Ostatnią Wieczerzę'?",
+            answers: [
+              "Michał Anioł",
+              "Leonardo da Vinci",
+              "Rafael",
+              "Donatello",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku Polska odzyskała niepodległość?",
+            answers: ["1914", "1916", "1918", "1920"],
+            correct: 2,
+          },
+          {
+            question: "Która planeta jest najbliżej Słońca?",
+            answers: ["Wenus", "Ziemia", "Merkury", "Mars"],
+            correct: 2,
+          },
+          {
+            question: "Kto skomponował 'Symfonię z Nowego Świata'?",
+            answers: [
+              "Antonín Dvořák",
+              "Bedřich Smetana",
+              "Johannes Brahms",
+              "Gustav Mahler",
+            ],
+            correct: 0,
+          },
+          {
+            question: "Jak nazywa się najwyższa góra Afryki?",
+            answers: [
+              "Mount Kenya",
+              "Kilimandżaro",
+              "Mount Stanley",
+              "Ras Dashen",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku Polska przystąpiła do Unii Europejskiej?",
+            answers: ["2002", "2003", "2004", "2005"],
+            correct: 2,
+          },
+          {
+            question: "Który pierwiastek ma symbol Fe?",
+            answers: ["Fluor", "Żelazo", "Fosfor", "Francium"],
+            correct: 1,
+          },
+          {
+            question: "Kto napisał 'Zbrodnię i karę'?",
+            answers: [
+              "Lew Tołstoj",
+              "Fiodor Dostojewski",
+              "Anton Czechow",
+              "Mikołaj Gogol",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym mieście znajduje się słynna Sagrada Familia?",
+            answers: ["Madryt", "Barcelona", "Sewilla", "Walencja"],
+            correct: 1,
+          },
+          {
+            question: "Ile wynosi prędkość dźwięku w powietrzu w przybliżeniu?",
+            answers: ["240 m/s", "300 m/s", "340 m/s", "380 m/s"],
+            correct: 2,
+          },
+          {
+            question: "Który z tych krajów ma najwięcej ludności?",
+            answers: ["USA", "Indonezja", "Brazylia", "Pakistan"],
+            correct: 1,
+          },
+          {
+            question: "Kto namalował 'Dziewczynę z perłą'?",
+            answers: [
+              "Rembrandt",
+              "Johannes Vermeer",
+              "Pieter Bruegel",
+              "Jan van Eyck",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku rozpoczęła się II wojna światowa?",
+            answers: ["1937", "1938", "1939", "1940"],
+            correct: 2,
+          },
+          {
+            question: "Jak nazywa się stolica Kanady?",
+            answers: ["Toronto", "Montreal", "Vancouver", "Ottawa"],
+            correct: 3,
+          },
+          {
+            question: "Który z tych oceanów jest najmniejszy?",
+            answers: ["Atlantycki", "Indyjski", "Arktyczny", "Południowy"],
+            correct: 2,
+          },
+          {
+            question: "Kto wynalazł dynamit?",
+            answers: [
+              "Alfred Nobel",
+              "Thomas Edison",
+              "Nikola Tesla",
+              "Alexander Graham Bell",
+            ],
+            correct: 0,
+          },
+          {
+            question: "W którym roku Neil Armstrong wylądował na Księżycu?",
+            answers: ["1967", "1968", "1969", "1970"],
+            correct: 2,
+          },
+          {
+            question: "Która rzeka przepływa przez Paryż?",
+            answers: ["Loara", "Sekwana", "Garonna", "Rodan"],
+            correct: 1,
+          },
+          {
+            question: "Kto napisał 'Sto lat samotności'?",
+            answers: [
+              "Jorge Luis Borges",
+              "Gabriel García Márquez",
+              "Mario Vargas Llosa",
+              "Pablo Neruda",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym kraju znajduje się Wielki Mur Chiński?",
+            answers: ["Japonia", "Korea Południowa", "Chiny", "Mongolia"],
+            correct: 2,
+          },
+        ],
+
+        // Poziom 10 - 250000 zł
+        10: [
+          {
+            question: "Który kraj ma najwięcej stref czasowych?",
+            answers: ["Rosja", "USA", "Francja", "Wielka Brytania"],
+            correct: 2,
+          },
+          {
+            question: "Kto napisał 'Władcę Pierścieni'?",
+            answers: [
+              "C.S. Lewis",
+              "J.R.R. Tolkien",
+              "George R.R. Martin",
+              "J.K. Rowling",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku zakończyła się II wojna światowa?",
+            answers: ["1943", "1944", "1945", "1946"],
+            correct: 2,
+          },
+          {
+            question: "Jak nazywa się najgłębszy punkt oceanów?",
+            answers: [
+              "Rów Portorykański",
+              "Rów Mariański",
+              "Rów Tongijski",
+              "Rów Filipiński",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Który z tych malary był impresjonistą?",
+            answers: [
+              "Pablo Picasso",
+              "Vincent van Gogh",
+              "Claude Monet",
+              "Salvador Dalí",
+            ],
+            correct: 2,
+          },
+          {
+            question: "W którym roku upadł Mur Berliński?",
+            answers: ["1987", "1988", "1989", "1990"],
+            correct: 2,
+          },
+          {
+            question: "Która planeta ma największą średnicę?",
+            answers: ["Saturn", "Jowisz", "Uran", "Neptun"],
+            correct: 1,
+          },
+          {
+            question: "Kto skomponował 'Marsz Turkowy'?",
+            answers: ["Bach", "Mozart", "Beethoven", "Chopin"],
+            correct: 1,
+          },
+          {
+            question: "W którym mieście znajduje się Akropol?",
+            answers: ["Rzym", "Ateny", "Sparta", "Kreta"],
+            correct: 1,
+          },
+          {
+            question:
+              "Ile wynosi temperatura wrzenia wody na szczycie Mount Everestu?",
+            answers: ["Około 72°C", "Około 82°C", "Około 92°C", "100°C"],
+            correct: 0,
+          },
+          {
+            question: "Który kraj ma najwyższy PKB per capita?",
+            answers: ["Norwegia", "Luksemburg", "Szwajcaria", "Katar"],
+            correct: 1,
+          },
+          {
+            question: "Kto napisał 'Braci Karamazow'?",
+            answers: [
+              "Lew Tołstoj",
+              "Fiodor Dostojewski",
+              "Anton Czechow",
+              "Iwan Turgieniew",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku powstało państwo Izrael?",
+            answers: ["1946", "1947", "1948", "1949"],
+            correct: 2,
+          },
+          {
+            question: "Jak nazywa się stolica Mongolii?",
+            answers: ["Biszkek", "Ułan Bator", "Astana", "Duszanbe"],
+            correct: 1,
+          },
+          {
+            question: "Który pierwiastek ma najwięcej izotopów?",
+            answers: ["Uran", "Pluton", "Cyna", "Xenon"],
+            correct: 2,
+          },
+          {
+            question: "Kto namalował 'Stworzenie Adama'?",
+            answers: [
+              "Leonardo da Vinci",
+              "Michał Anioł",
+              "Rafael",
+              "Donatello",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku Polska przyjęła chrześcijaństwo?",
+            answers: ["956", "966", "976", "986"],
+            correct: 1,
+          },
+          {
+            question: "Która pustynia jest największa na świecie?",
+            answers: ["Sahara", "Gobi", "Atacama", "Antarktyda"],
+            correct: 3,
+          },
+          {
+            question: "Kto wynalazł telefon?",
+            answers: [
+              "Thomas Edison",
+              "Nikola Tesla",
+              "Alexander Graham Bell",
+              "Guglielmo Marconi",
+            ],
+            correct: 2,
+          },
+          {
+            question: "W którym roku zakończyła się wojna stuletnia?",
+            answers: ["1433", "1443", "1453", "1463"],
+            correct: 2,
+          },
+          {
+            question: "Jak nazywa się najwyższa góra w Ameryce Południowej?",
+            answers: [
+              "Chimborazo",
+              "Huascarán",
+              "Aconcagua",
+              "Ojos del Salado",
+            ],
+            correct: 2,
+          },
+          {
+            question: "Który z tych krajów nie był w ZSRR?",
+            answers: ["Estonia", "Łotwa", "Litwa", "Finlandia"],
+            correct: 3,
+          },
+          {
+            question: "Kto napisał 'Faust'?",
+            answers: [
+              "Friedrich Schiller",
+              "Johann Wolfgang von Goethe",
+              "Heinrich Heine",
+              "Thomas Mann",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku wynaleziono druk?",
+            answers: ["Około 1440", "Około 1480", "Około 1520", "Około 1560"],
+            correct: 0,
+          },
+          {
+            question: "Która rzeka jest najdłuższa na świecie?",
+            answers: ["Amazonka", "Nil", "Jangcy", "Missisipi"],
+            correct: 0,
+          },
+        ],
+
+        // Poziom 11 - 500000 zł
+        11: [
+          {
+            question: "W którym roku wybuchła rewolucja francuska?",
+            answers: ["1789", "1799", "1809", "1819"],
+            correct: 0,
+          },
+          {
+            question: "Kto napisał 'Boską Komedię'?",
+            answers: ["Petrarka", "Boccaccio", "Dante Alighieri", "Ariosto"],
+            correct: 2,
+          },
+          {
+            question: "Jak nazywa się najdłuższa rzeka w Azji?",
+            answers: ["Huang He", "Mekong", "Jangcy", "Ganges"],
+            correct: 2,
+          },
+          {
+            question: "W którym mieście znajduje się Ermitaż?",
+            answers: ["Moskwa", "Petersburg", "Kijów", "Mińsk"],
+            correct: 1,
+          },
+          {
+            question: "Który z tych kompozytorów żył najdłużej?",
+            answers: [
+              "Mozart (35 lat)",
+              "Schubert (31 lat)",
+              "Chopin (39 lat)",
+              "Verdi (87 lat)",
+            ],
+            correct: 3,
+          },
+          {
+            question: "W którym roku odbyła się bitwa pod Waterloo?",
+            answers: ["1805", "1810", "1815", "1820"],
+            correct: 2,
+          },
+          {
+            question: "Jak nazywa się najwyższy wodospad świata?",
+            answers: [
+              "Niagara",
+              "Wodospad Anioła",
+              "Wodospad Wiktorii",
+              "Iguazu",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Który kraj ma najwięcej laureatów Nagrody Nobla?",
+            answers: ["Wielka Brytania", "Niemcy", "USA", "Francja"],
+            correct: 2,
+          },
+          {
+            question: "Kto namalował 'Guernicę'?",
+            answers: [
+              "Salvador Dalí",
+              "Pablo Picasso",
+              "Joan Miró",
+              "Diego Rivera",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku rozpoczęła się epidemia dżumy w Europie?",
+            answers: ["1347", "1367", "1387", "1407"],
+            correct: 0,
+          },
+          {
+            question: "Jak nazywa się stolica Islandii?",
+            answers: ["Reykjavik", "Akureyri", "Keflavik", "Hafnarfjörður"],
+            correct: 0,
+          },
+          {
+            question:
+              "Który z tych polskich królów był elekcyjny jako pierwszy?",
+            answers: [
+              "Henryk Walezy",
+              "Stefan Batory",
+              "Zygmunt III Waza",
+              "Jan III Sobieski",
+            ],
+            correct: 0,
+          },
+          {
+            question: "W którym roku odkryto Australię?",
+            answers: ["1670", "1700", "1730", "1770"],
+            correct: 3,
+          },
+          {
+            question: "Kto napisał 'Pana Tadeusza'?",
+            answers: [
+              "Juliusz Słowacki",
+              "Adam Mickiewicz",
+              "Zygmunt Krasiński",
+              "Cyprian Norwid",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Jak nazywa się najwyższy szczyt Europy (bez Kaukazu)?",
+            answers: [
+              "Matterhorn",
+              "Mont Blanc",
+              "Monte Rosa",
+              "Gran Paradiso",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku odkryto penicylinę?",
+            answers: ["1918", "1928", "1938", "1948"],
+            correct: 1,
+          },
+          {
+            question: "Który z tych filozofów był starożytnym Grekiem?",
+            answers: ["Seneka", "Cyceron", "Platon", "Marek Aureliusz"],
+            correct: 2,
+          },
+          {
+            question: "W którym roku rozpoczęła się I wojna światowa?",
+            answers: ["1912", "1913", "1914", "1915"],
+            correct: 2,
+          },
+          {
+            question: "Jak nazywa się najstarsza stolica Europy?",
+            answers: ["Rzym", "Ateny", "Lizbona", "Madryt"],
+            correct: 1,
+          },
+          {
+            question: "Kto skomponował operę 'Cyrulik sewilski'?",
+            answers: [
+              "Giuseppe Verdi",
+              "Gioachino Rossini",
+              "Giacomo Puccini",
+              "Vincenzo Bellini",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku odbył się chrzest Polski?",
+            answers: ["956", "966", "976", "986"],
+            correct: 1,
+          },
+          {
+            question:
+              "Który z tych krajów ma najdłuższą historię nieprzerwanych rządów monarchii?",
+            answers: ["Wielka Brytania", "Japonia", "Hiszpania", "Dania"],
+            correct: 1,
+          },
+          {
+            question: "Kto napisał 'Don Kichota'?",
+            answers: [
+              "Lope de Vega",
+              "Miguel de Cervantes",
+              "Pedro Calderón",
+              "Tirso de Molina",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku nastąpił rozbiór Polski?",
+            answers: ["1772 (pierwszy)", "1782", "1792", "1802"],
+            correct: 0,
+          },
+          {
+            question: "Jak nazywa się najdłuższa plaża świata?",
+            answers: [
+              "Copacabana",
+              "Bondi Beach",
+              "Praia do Cassino",
+              "Miami Beach",
+            ],
+            correct: 2,
+          },
+        ],
+
+        // Poziom 12 - 1000000 zł
+        12: [
+          {
+            question: "W którym roku upadło Cesarstwo Rzymskie Zachodnie?",
+            answers: ["376", "410", "476", "536"],
+            correct: 2,
+          },
+          {
+            question: "Kto napisał 'Iliadę' i 'Odyseję'?",
+            answers: ["Wergiliusz", "Homer", "Owidiusz", "Hezjod"],
+            correct: 1,
+          },
+          {
+            question: "Jak nazywa się najstarsza cywilizacja świata?",
+            answers: ["Egipska", "Mezopotamska", "Chińska", "Indyjska"],
+            correct: 1,
+          },
+          {
+            question: "W którym roku Krzysztof Kolumb odkrył Amerykę?",
+            answers: ["1482", "1492", "1502", "1512"],
+            correct: 1,
+          },
+          {
+            question:
+              "Który z tych polskich władców był pierwszym królem Polski?",
+            answers: [
+              "Mieszko I",
+              "Bolesław Chrobry",
+              "Kazimierz Wielki",
+              "Władysław Łokietek",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku rozpoczęła się wojna trzydziestoletnia?",
+            answers: ["1608", "1618", "1628", "1638"],
+            correct: 1,
+          },
+          {
+            question: "Jak nazywa się najstarszy uniwersytet w Europie?",
+            answers: ["Oxford", "Cambridge", "Bolonia", "Sorbona"],
+            correct: 2,
+          },
+          {
+            question: "Kto namalował 'Narodziny Wenus'?",
+            answers: [
+              "Leonardo da Vinci",
+              "Sandro Botticelli",
+              "Raffaello Santi",
+              "Tiziano Vecellio",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku nastąpiła bitwa pod Grunwaldem?",
+            answers: ["1400", "1410", "1420", "1430"],
+            correct: 1,
+          },
+          {
+            question:
+              "Który z tych cesarzy rzymskich był znany jako 'filozofujący cesarz'?",
+            answers: [
+              "Oktawian August",
+              "Marek Aureliusz",
+              "Juliusz Cezar",
+              "Neron",
+            ],
+            correct: 1,
+          },
+          {
+            question:
+              "W którym roku nastąpił schizma wschodnia (podział Kościoła)?",
+            answers: ["1014", "1034", "1054", "1074"],
+            correct: 2,
+          },
+          {
+            question: "Kto napisał 'Państwo'?",
+            answers: ["Sokrates", "Platon", "Arystoteles", "Epikur"],
+            correct: 1,
+          },
+          {
+            question: "Jak nazywa się najstarsze pismo świata?",
+            answers: [
+              "Hieroglify egipskie",
+              "Pismo klinowe",
+              "Pismo chińskie",
+              "Pismo fenickie",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku nastąpił upadek Konstantynopola?",
+            answers: ["1423", "1433", "1443", "1453"],
+            correct: 3,
+          },
+          {
+            question:
+              "Który z tych filozofów był nauczycielem Aleksandra Wielkiego?",
+            answers: ["Sokrates", "Platon", "Arystoteles", "Diogenes"],
+            correct: 2,
+          },
+          {
+            question: "W którym roku zakończyła się wojna stuletnia?",
+            answers: ["1433", "1443", "1453", "1463"],
+            correct: 2,
+          },
+          {
+            question: "Kto skomponował 'Requiem'?",
+            answers: ["Bach", "Mozart", "Beethoven", "Verdi"],
+            correct: 1,
+          },
+          {
+            question: "Jak nazywa się najstarsza religia monoteistyczna?",
+            answers: [
+              "Chrześcijaństwo",
+              "Islam",
+              "Judaizm",
+              "Zaratusztrianizm",
+            ],
+            correct: 3,
+          },
+          {
+            question: "W którym roku nastąpiło zjednoczenie Włoch?",
+            answers: ["1851", "1861", "1871", "1881"],
+            correct: 1,
+          },
+          {
+            question: "Który z tych polskich królów był zwany Wielkim?",
+            answers: [
+              "Bolesław Chrobry",
+              "Kazimierz Wielki",
+              "Władysław Jagiełło",
+              "Jan III Sobieski",
+            ],
+            correct: 1,
+          },
+          {
+            question: "W którym roku nastąpiła Rewolucja Październikowa?",
+            answers: ["1915", "1916", "1917", "1918"],
+            correct: 2,
+          },
+          {
+            question: "Kto napisał 'Księcia'?",
+            answers: [
+              "Thomas Hobbes",
+              "Niccolò Machiavelli",
+              "Jean-Jacques Rousseau",
+              "John Locke",
+            ],
+            correct: 1,
+          },
+          {
+            question: "Jak nazywa się najdłuższa dynastie w historii Chin?",
+            answers: ["Han", "Tang", "Ming", "Zhou"],
+            correct: 3,
+          },
+          {
+            question: "W którym roku nastąpił upadek muru berlińskiego?",
+            answers: ["1987", "1988", "1989", "1990"],
+            correct: 2,
+          },
+          {
+            question:
+              "Który z tych malary był przedstawicielem renesansu włoskiego?",
+            answers: ["Rembrandt", "Rafael", "Rubens", "Velázquez"],
+            correct: 1,
+          },
+        ],
+      };
+
+      let questions = [];
+      let currentQuestion = 0;
+      let currentPrize = 0;
+      let lifelines = {
+        fifty: true,
+        phone: true,
+        audience: true,
+        swap: true,
+        expert: true,
+      };
+      let selectedLifeline = null;
+      let removedAnswers = [];
+      let canAnswer = true;
+
+      // Text-to-Speech voices - different parameters for variety
+      const voices = {
+        host: { rate: 0.8, pitch: 1.0 }, // Prowadzący - wolniejszy
+        friend: { rate: 0.85, pitch: 1.1 }, // Przyjaciel - wolniejszy
+        expert: { rate: 0.75, pitch: 0.95 }, // Ekspert - najwolniejszy
+        audience: { rate: 0.82, pitch: 1.05 }, // Publiczność - wolniejszy
+      };
+
+      function speak(text, voiceType = "host") {
+        if ("speechSynthesis" in window) {
+          // Cancel any ongoing speech
+          speechSynthesis.cancel();
+
+          // Add a small pause to prevent cutting off the beginning
+          const utterance = new SpeechSynthesisUtterance(" " + text);
+          utterance.lang = "pl-PL";
+          utterance.rate = voices[voiceType].rate;
+          utterance.pitch = voices[voiceType].pitch;
+          utterance.volume = 1.0;
+
+          // Get voices list
+          const voicesList = speechSynthesis.getVoices();
+
+          // Try to find female voices in order of preference:
+          // 1. Polish female voice
+          let selectedVoice = voicesList.find(
+            (v) =>
+              v.lang.includes("pl") &&
+              (v.name.toLowerCase().includes("female") ||
+                v.name.toLowerCase().includes("kobieta") ||
+                v.name.toLowerCase().includes("paulina") ||
+                v.name.toLowerCase().includes("zofia"))
+          );
+
+          // 2. Any female voice (English female is better than Polish male)
+          if (!selectedVoice) {
+            selectedVoice = voicesList.find(
+              (v) =>
+                v.name.toLowerCase().includes("female") ||
+                v.name.toLowerCase().includes("woman") ||
+                v.name.toLowerCase().includes("samantha") ||
+                v.name.toLowerCase().includes("victoria") ||
+                v.name.toLowerCase().includes("karen") ||
+                v.name.toLowerCase().includes("zira")
+            );
+          }
+
+          // 3. Any Polish voice (often female by default)
+          if (!selectedVoice) {
+            selectedVoice = voicesList.find((v) => v.lang.includes("pl"));
+          }
+
+          if (selectedVoice) {
+            utterance.voice = selectedVoice;
+          }
+
+          // Small delay before speaking to ensure proper initialization
+          setTimeout(() => {
+            speechSynthesis.speak(utterance);
+          }, 100);
+        }
+      }
+
+      function selectRandomQuestions() {
+        // Select one random question from each level (1-12)
+        questions = [];
+        for (let level = 1; level <= 12; level++) {
+          const levelQuestions = questionsByLevel[level];
+          const randomIndex = Math.floor(Math.random() * levelQuestions.length);
+          questions.push(levelQuestions[randomIndex]);
+        }
+      }
+
+      function startGame() {
+        selectRandomQuestions();
+        document.getElementById("startScreen").style.display = "none";
+        document.getElementById("gameScreen").style.display = "block";
+        renderPrizeLadder();
+        loadQuestion();
+        updateMillionCounter();
+        speak("Witamy w Milionerach! Zaczynamy grę. Powodzenia!");
+      }
+
+      function updateMillionCounter() {
+        const millions = parseInt(localStorage.getItem("millionWins") || "0");
+        document.getElementById("millionCount").textContent = millions;
+      }
+
+      function incrementMillionCounter() {
+        const millions = parseInt(localStorage.getItem("millionWins") || "0");
+        localStorage.setItem("millionWins", (millions + 1).toString());
+        updateMillionCounter();
+      }
+
+      function renderPrizeLadder() {
+        const ladder = document.getElementById("prizeLadder");
+        ladder.innerHTML =
+          '<h3 style="color: #FFD700; margin-bottom: 15px;">Drabinka Wygranych</h3>';
+
+        for (let i = prizes.length - 1; i >= 0; i--) {
+          const prize = prizes[i];
+          const div = document.createElement("div");
+          div.className = "prize-item";
+          if (i === currentQuestion) div.classList.add("current");
+          if (i < currentQuestion) div.classList.add("completed");
+          if (prize.guaranteed) div.classList.add("guaranteed");
+
+          div.innerHTML = `
+                    <span>${i + 1}.</span>
+                    <span>${prize.amount.toLocaleString("pl-PL")} zł ${
+            prize.guaranteed ? "⭐" : ""
+          }</span>
+                `;
+          ladder.appendChild(div);
+        }
+      }
+
+      function loadQuestion() {
+        if (currentQuestion >= questions.length) {
+          endGame(true);
+          return;
+        }
+
+        const q = questions[currentQuestion];
+        document.getElementById("questionNumber").textContent = `Pytanie ${
+          currentQuestion + 1
+        } z 12`;
+        document.getElementById("questionText").textContent = q.question;
+        document.getElementById("currentPrize").textContent =
+          currentQuestion === 0
+            ? "0 zł"
+            : `${prizes[currentQuestion - 1].amount.toLocaleString(
+                "pl-PL"
+              )} zł`;
+
+        const container = document.getElementById("answersContainer");
+        container.innerHTML = "";
+        removedAnswers = [];
+        canAnswer = true;
+
+        q.answers.forEach((answer, index) => {
+          const btn = document.createElement("button");
+          btn.className = "answer-btn";
+          btn.innerHTML = `<strong>${String.fromCharCode(
+            65 + index
+          )}:</strong> ${answer}`;
+          btn.onclick = () => selectAnswer(index);
+          btn.id = `answer${index}`;
+          container.appendChild(btn);
+        });
+
+        // Hide action buttons - they're shown separately with showContinueChoice
+        document.getElementById("actionButtons").style.display = "none";
+
+        // Show surrender button during question (but not on first question)
+        const surrenderBtn = document.getElementById("surrenderDuringQuestion");
+        if (currentQuestion === 0) {
+          surrenderBtn.style.display = "none";
+        } else {
+          surrenderBtn.style.display = "inline-block";
+        }
+
+        renderPrizeLadder();
+
+        // Speak question
+        setTimeout(() => {
+          speak(
+            `Pytanie za ${prizes[currentQuestion].amount.toLocaleString(
+              "pl-PL"
+            )} złotych. ${q.question}`
+          );
+        }, 500);
+      }
+
+      function selectAnswer(index) {
+        if (!canAnswer) return;
+
+        canAnswer = false;
+        const q = questions[currentQuestion];
+        const correct = q.correct;
+
+        // Hide surrender button
+        document.getElementById("surrenderDuringQuestion").style.display =
+          "none";
+
+        // Disable all buttons
+        for (let i = 0; i < 4; i++) {
+          document.getElementById(`answer${i}`).disabled = true;
+        }
+
+        // Show result
+        document
+          .getElementById(`answer${index}`)
+          .classList.add(index === correct ? "correct" : "wrong");
+        if (index !== correct) {
+          document.getElementById(`answer${correct}`).classList.add("correct");
+        }
+
+        setTimeout(() => {
+          if (index === correct) {
+            currentPrize = prizes[currentQuestion].amount;
+            speak(
+              `Brawo! Poprawna odpowiedź! Wygrana: ${currentPrize.toLocaleString(
+                "pl-PL"
+              )} złotych!`
+            );
+            setTimeout(() => {
+              currentQuestion++;
+              // Show continue/surrender choice before next question (but not on first question or if it's the last question)
+              if (currentQuestion < questions.length && currentQuestion > 0) {
+                showContinueChoice();
+              } else {
+                loadQuestion();
+              }
+            }, 3000);
+          } else {
+            speak("Niestety, to błędna odpowiedź. Koniec gry.");
+            setTimeout(() => {
+              endGame(false);
+            }, 3000);
+          }
+        }, 1000);
+      }
+
+      function surrender() {
+        const prize =
+          currentQuestion === 0 ? 0 : prizes[currentQuestion - 1].amount;
+        speak(
+          `Decydujesz się zrezygnować. Zabierasz do domu ${prize.toLocaleString(
+            "pl-PL"
+          )} złotych. Gratulacje!`
+        );
+        setTimeout(() => {
+          showGameOver(
+            "Rezygnacja",
+            prize,
+            `Zdecydowałeś się zabrać pieniądze i zrezygnować z dalszej gry.`
+          );
+        }, 2000);
+      }
+
+      function surrenderDuringQuestion() {
+        if (!canAnswer) return; // Nie można rezygnować po wybraniu odpowiedzi
+
+        canAnswer = false;
+        const prize =
+          currentQuestion === 0 ? 0 : prizes[currentQuestion - 1].amount;
+
+        // Hide surrender button
+        document.getElementById("surrenderDuringQuestion").style.display =
+          "none";
+
+        // Disable all answer buttons
+        for (let i = 0; i < 4; i++) {
+          const btn = document.getElementById(`answer${i}`);
+          if (btn) btn.disabled = true;
+        }
+
+        speak(
+          `Decydujesz się zrezygnować. Zabierasz do domu ${prize.toLocaleString(
+            "pl-PL"
+          )} złotych. Gratulacje!`
+        );
+        setTimeout(() => {
+          showGameOver(
+            "Rezygnacja",
+            prize,
+            `Zdecydowałeś się zabrać pieniądze i zrezygnować z dalszej gry.`
+          );
+        }, 2000);
+      }
+
+      function continueGame() {
+        document.getElementById("actionButtons").style.display = "none";
+        loadQuestion();
+      }
+
+      function showContinueChoice() {
+        // Hide surrender button during question
+        document.getElementById("surrenderDuringQuestion").style.display =
+          "none";
+
+        // Hide question box temporarily
+        document.getElementById("answersContainer").innerHTML =
+          '<p style="text-align: center; font-size: 1.2em; padding: 40px;">Wygrałeś ' +
+          prizes[currentQuestion - 1].amount.toLocaleString("pl-PL") +
+          " zł!</p>";
+        document.getElementById("questionText").textContent =
+          "Czy chcesz kontynuować grę?";
+        document.getElementById("actionButtons").style.display = "flex";
+
+        speak(
+          "Masz już " +
+            prizes[currentQuestion - 1].amount.toLocaleString("pl-PL") +
+            " złotych. Czy chcesz kontynuować grę, czy zabrać pieniądze?",
+          "host"
+        );
+      }
+
+      function showLifelineModal(type) {
+        const lifelineMap = {
+          50: "fifty",
+          phone: "phone",
+          audience: "audience",
+          swap: "swap",
+          expert: "expert",
+        };
+
+        if (!lifelines[lifelineMap[type]]) return;
+
+        selectedLifeline = type;
+        const modal = document.getElementById("lifelineModal");
+        const title = document.getElementById("modalTitle");
+        const desc = document.getElementById("modalDescription");
+        const extra = document.getElementById("modalExtra");
+        const confirmBtn = document.getElementById("modalConfirmBtn");
+        extra.innerHTML = "";
+        confirmBtn.style.display = "block";
+
+        switch (type) {
+          case "50":
+            title.textContent = "50:50";
+            desc.textContent =
+              "Komputer usunie dwie błędne odpowiedzi, zostaną tylko dwie - jedna poprawna i jedna błędna.";
+            speak(
+              "Koło ratunkowe pięćdziesiąt na pięćdziesiąt. Komputer usunie dwie błędne odpowiedzi.",
+              "host"
+            );
+            break;
+          case "phone":
+            title.textContent = "📞 Telefon do przyjaciela";
+            desc.textContent =
+              "Twój przyjaciel z studia pomoże Ci odpowiedzieć. Ma 30 sekund na udzielenie odpowiedzi. Uwaga: jest 15% szans, że się pomyli!";
+            speak(
+              "Telefon do przyjaciela. Twój kolega w studiu powie, co by odpowiedział. Ale uwaga, może się pomylić!",
+              "host"
+            );
+            break;
+          case "audience":
+            title.textContent = "👥 Pytanie do publiczności";
+            desc.textContent =
+              "Publiczność w studiu zagłosuje na odpowiedź, którą uważa za poprawną. Zobaczysz procentowy rozkład głosów.";
+            speak(
+              "Pytanie do publiczności. Widzowie w studiu zagłosują na odpowiedź.",
+              "host"
+            );
+            break;
+          case "swap":
+            title.textContent = "🔄 Zamiana pytania";
+            desc.textContent =
+              "Obecne pytanie zostanie zamienione na nowe pytanie o podobnym poziomie trudności. Uwaga: nowe pytanie może być trudniejsze!";
+            speak(
+              "Zamiana pytania. Dostaniesz nowe pytanie o podobnym poziomie trudności.",
+              "host"
+            );
+            break;
+          case "expert":
+            title.textContent = "🎓 Pytanie do eksperta";
+            desc.textContent =
+              "Zapytasz eksperta w studiu o jego opinię. Ekspert jest bardzo dobrze przygotowany, ale też może się pomylić w 5% przypadków.";
+            speak(
+              "Pytanie do eksperta. Nasz specjalista w studiu podzieli się swoją wiedzą.",
+              "host"
+            );
+            break;
+        }
+
+        modal.classList.add("active");
+      }
+
+      function closeLifelineModal() {
+        document.getElementById("lifelineModal").classList.remove("active");
+        selectedLifeline = null;
+        speechSynthesis.cancel();
+      }
+
+      function useLifeline() {
+        const type = selectedLifeline;
+        const lifelineMap = {
+          50: "fifty",
+          phone: "phone",
+          audience: "audience",
+          swap: "swap",
+          expert: "expert",
+        };
+
+        lifelines[lifelineMap[type]] = false;
+
+        const btnId =
+          type === "50"
+            ? "lifeline50"
+            : type === "phone"
+            ? "lifelinePhone"
+            : type === "audience"
+            ? "lifelineAudience"
+            : type === "swap"
+            ? "lifelineSwap"
+            : "lifelineExpert";
+        document.getElementById(btnId).disabled = true;
+
+        const q = questions[currentQuestion];
+
+        switch (type) {
+          case "50":
+            use5050();
+            break;
+          case "phone":
+            usePhone(q);
+            break;
+          case "audience":
+            useAudience(q);
+            break;
+          case "swap":
+            useSwap();
+            break;
+          case "expert":
+            useExpert(q);
+            break;
+        }
+      }
+
+      function use5050() {
+        const q = questions[currentQuestion];
+        const incorrect = [];
+
+        for (let i = 0; i < 4; i++) {
+          if (i !== q.correct) incorrect.push(i);
+        }
+
+        // Shuffle and take first 2
+        incorrect.sort(() => Math.random() - 0.5);
+        removedAnswers = incorrect.slice(0, 2);
+
+        removedAnswers.forEach((index) => {
+          document.getElementById(`answer${index}`).classList.add("removed");
+          document.getElementById(`answer${index}`).disabled = true;
+        });
+
+        closeLifelineModal();
+        speak(
+          "Komputer usuwa dwie błędne odpowiedzi. Zostają tylko dwie możliwości.",
+          "host"
+        );
+      }
+
+      function usePhone(q) {
+        const modal = document.getElementById("modalExtra");
+
+        // Pytanie 1 - zawsze poprawna odpowiedź (100% szans)
+        if (currentQuestion === 0) {
+          const answerLetter = String.fromCharCode(65 + q.correct);
+          modal.innerHTML = `<p style="margin-top: 20px; font-style: italic; color: #FFD700;">
+                    "Cześć! To jest odpowiedź ${answerLetter}. Jestem pewny!"
+                </p>`;
+
+          document.getElementById("modalConfirmBtn").style.display = "none";
+
+          setTimeout(() => {
+            speak(
+              `Cześć! To jest odpowiedź ${answerLetter}. Jestem pewny!`,
+              "friend"
+            );
+          }, 500);
+
+          setTimeout(() => {
+            closeLifelineModal();
+          }, 5000);
+          return;
+        }
+
+        // Pytania 2-12: szansa na błąd wzrasta z trudnością (8-15%)
+        const baseWrongChance = 0.08; // 8% na pytaniu 2
+        const wrongChanceIncrease = 0.007 * currentQuestion; // +0.7% na każde pytanie
+        const wrongChance = Math.min(
+          baseWrongChance + wrongChanceIncrease,
+          0.15
+        ); // max 15%
+
+        let answer;
+        if (Math.random() < wrongChance) {
+          const wrong = [];
+          for (let i = 0; i < 4; i++) {
+            if (i !== q.correct) wrong.push(i);
+          }
+          answer = wrong[Math.floor(Math.random() * wrong.length)];
+        } else {
+          answer = q.correct;
+        }
+
+        const answerLetter = String.fromCharCode(65 + answer);
+        const isWrong = answer !== q.correct;
+
+        modal.innerHTML = `<p style="margin-top: 20px; font-style: italic; color: #FFD700;">
+                "Cześć! Myślę, że to jest odpowiedź ${answerLetter}. ${
+          isWrong
+            ? "Ale nie jestem pewien, to trudne pytanie..."
+            : "Jestem dość pewny tej odpowiedzi!"
+        }"
+            </p>`;
+
+        document.getElementById("modalConfirmBtn").style.display = "none";
+
+        setTimeout(() => {
+          speak(
+            `Cześć! Myślę że to jest odpowiedź ${answerLetter}. ${
+              isWrong
+                ? "Ale nie jestem całkiem pewien, to trudne pytanie."
+                : "Jestem dość pewny tej odpowiedzi!"
+            }`,
+            "friend"
+          );
+        }, 500);
+
+        setTimeout(() => {
+          closeLifelineModal();
+        }, 6000);
+      }
+
+      function useAudience(q) {
+        const modal = document.getElementById("modalExtra");
+        const votes = [0, 0, 0, 0];
+
+        // Pytanie 1 - zawsze poprawna odpowiedź (100% głosuje na poprawną)
+        if (currentQuestion === 0) {
+          votes[q.correct] = 100;
+
+          let html = '<div class="audience-results">';
+          for (let i = 0; i < 4; i++) {
+            html += `
+                        <div class="audience-bar">
+                            <div class="audience-bar-label">${String.fromCharCode(
+                              65 + i
+                            )}: ${q.answers[i]}</div>
+                            <div class="audience-bar-fill">
+                                <div class="audience-bar-inner" style="width: ${
+                                  votes[i]
+                                }%">${votes[i]}%</div>
+                            </div>
+                        </div>
+                    `;
+          }
+          html += "</div>";
+
+          modal.innerHTML = html;
+          document.getElementById("modalConfirmBtn").style.display = "none";
+
+          setTimeout(() => {
+            const maxLetter = String.fromCharCode(65 + q.correct);
+            speak(
+              `Publiczność zagłosowała jednogłośnie! 100 procent głosów otrzymała odpowiedź ${maxLetter}.`,
+              "audience"
+            );
+          }, 500);
+
+          setTimeout(() => {
+            closeLifelineModal();
+          }, 8000);
+          return;
+        }
+
+        // Pytania 2-12: publiczność ma największe szanse na błąd (10-25%)
+        const baseWrongChance = 0.1; // 10% na pytaniu 2
+        const wrongChanceIncrease = 0.013 * currentQuestion; // +1.3% na każde pytanie
+        const wrongChance = Math.min(
+          baseWrongChance + wrongChanceIncrease,
+          0.25
+        ); // max 25%
+
+        let mainAnswer;
+        if (Math.random() < wrongChance) {
+          // Publiczność wskazuje błędną odpowiedź jako "najlepszą"
+          const wrong = [];
+          for (let i = 0; i < 4; i++) {
+            if (i !== q.correct) wrong.push(i);
+          }
+          mainAnswer = wrong[Math.floor(Math.random() * wrong.length)];
+        } else {
+          mainAnswer = q.correct;
+        }
+
+        // Bardziej realistyczne rozkłady głosów
+        let remaining = 100;
+
+        // Główna odpowiedź dostaje 30-50%
+        votes[mainAnswer] = 30 + Math.floor(Math.random() * 21);
+        remaining -= votes[mainAnswer];
+
+        // Rozdziel pozostałe głosy
+        const otherIndices = [];
+        for (let i = 0; i < 4; i++) {
+          if (i !== mainAnswer) otherIndices.push(i);
+        }
+
+        const vote1 = Math.floor(Math.random() * (remaining - 20));
+        votes[otherIndices[0]] = vote1;
+        remaining -= vote1;
+
+        const vote2 = Math.floor(Math.random() * (remaining - 5));
+        votes[otherIndices[1]] = vote2;
+        remaining -= vote2;
+
+        votes[otherIndices[2]] = remaining;
+
+        let html = '<div class="audience-results">';
+        for (let i = 0; i < 4; i++) {
+          html += `
+                    <div class="audience-bar">
+                        <div class="audience-bar-label">${String.fromCharCode(
+                          65 + i
+                        )}: ${q.answers[i]}</div>
+                        <div class="audience-bar-fill">
+                            <div class="audience-bar-inner" style="width: ${
+                              votes[i]
+                            }%">${votes[i]}%</div>
+                        </div>
+                    </div>
+                `;
+        }
+        html += "</div>";
+
+        modal.innerHTML = html;
+        document.getElementById("modalConfirmBtn").style.display = "none";
+
+        setTimeout(() => {
+          const maxVote = Math.max(...votes);
+          const maxIndex = votes.indexOf(maxVote);
+          const maxLetter = String.fromCharCode(65 + maxIndex);
+          speak(
+            `Publiczność zagłosowała. Najwięcej głosów, bo ${maxVote} procent, otrzymała odpowiedź ${maxLetter}.`,
+            "audience"
+          );
+        }, 500);
+
+        setTimeout(() => {
+          closeLifelineModal();
+        }, 8000);
+      }
+
+      function useSwap() {
+        closeLifelineModal();
+        speak("Zmieniamy pytanie na nowe. Chwileczkę...", "host");
+
+        setTimeout(() => {
+          // Get current level (question number + 1)
+          const currentLevel = currentQuestion + 1;
+
+          // Get all questions from this level
+          const levelQuestions = questionsByLevel[currentLevel];
+
+          // Find a different question than the current one
+          let newQuestion;
+          do {
+            const randomIndex = Math.floor(
+              Math.random() * levelQuestions.length
+            );
+            newQuestion = levelQuestions[randomIndex];
+          } while (
+            newQuestion.question === questions[currentQuestion].question &&
+            levelQuestions.length > 1
+          );
+
+          questions[currentQuestion] = newQuestion;
+
+          loadQuestion();
+        }, 2000);
+      }
+
+      function useExpert(q) {
+        const modal = document.getElementById("modalExtra");
+
+        // Pytanie 1 - zawsze poprawna odpowiedź (100% szans)
+        if (currentQuestion === 0) {
+          const answerLetter = String.fromCharCode(65 + q.correct);
+          modal.innerHTML = `<p style="margin-top: 20px; font-style: italic; color: #FFD700;">
+                    "Na podstawie mojej wiedzy jestem przekonany że prawidłowa odpowiedź to ${answerLetter}. Mam co do tego pełną pewność."
+                </p>`;
+
+          document.getElementById("modalConfirmBtn").style.display = "none";
+
+          setTimeout(() => {
+            speak(
+              `Na podstawie mojej wiedzy jestem przekonany że prawidłowa odpowiedź to ${answerLetter}. Mam co do tego pełną pewność.`,
+              "expert"
+            );
+          }, 500);
+
+          setTimeout(() => {
+            closeLifelineModal();
+          }, 7000);
+          return;
+        }
+
+        // Pytania 2-12: ekspert ma najmniejsze szanse na błąd (3-8%)
+        const baseWrongChance = 0.03; // 3% na pytaniu 2
+        const wrongChanceIncrease = 0.004 * currentQuestion; // +0.4% na każde pytanie
+        const wrongChance = Math.min(
+          baseWrongChance + wrongChanceIncrease,
+          0.08
+        ); // max 8%
+
+        let answer;
+        if (Math.random() < wrongChance) {
+          const wrong = [];
+          for (let i = 0; i < 4; i++) {
+            if (i !== q.correct) wrong.push(i);
+          }
+          answer = wrong[Math.floor(Math.random() * wrong.length)];
+        } else {
+          answer = q.correct;
+        }
+
+        const answerLetter = String.fromCharCode(65 + answer);
+        const isWrong = answer !== q.correct;
+
+        modal.innerHTML = `<p style="margin-top: 20px; font-style: italic; color: #FFD700;">
+                "Na podstawie mojej wiedzy i doświadczenia, jestem przekonany, że prawidłowa odpowiedź to ${answerLetter}. ${
+          isWrong ? "Choć to trudne pytanie." : "Mam co do tego dużą pewność."
+        }"
+            </p>`;
+
+        document.getElementById("modalConfirmBtn").style.display = "none";
+
+        setTimeout(() => {
+          speak(
+            `Na podstawie mojej wiedzy jestem przekonany że prawidłowa odpowiedź to ${answerLetter}. Mam co do tego dużą pewność.`,
+            "expert"
+          );
+        }, 500);
+
+        setTimeout(() => {
+          closeLifelineModal();
+        }, 7000);
+      }
+
+      function endGame(won) {
+        // Find last guaranteed prize reached
+        let finalPrize = 0;
+        if (won) {
+          finalPrize = 1000000;
+          incrementMillionCounter(); // Zwiększ licznik milionów!
+        } else {
+          // Find highest guaranteed prize that was passed
+          for (let i = currentQuestion - 1; i >= 0; i--) {
+            if (prizes[i].guaranteed) {
+              finalPrize = prizes[i].amount;
+              break;
+            }
+          }
+        }
+
+        if (won) {
+          showGameOver(
+            "GRATULACJE!",
+            finalPrize,
+            "Wygrałeś główną nagrodę! Jesteś MILIONEREM!"
+          );
+        } else {
+          showGameOver(
+            "Koniec gry",
+            finalPrize,
+            `Niestety, to błędna odpowiedź. Zabierasz ${finalPrize.toLocaleString(
+              "pl-PL"
+            )} zł.`
+          );
+        }
+      }
+
+      function showGameOver(title, prize, message) {
+        document.getElementById("gameScreen").style.display = "none";
+        document.getElementById("gameOverScreen").style.display = "block";
+        document.getElementById("gameOverTitle").textContent = title;
+        document.getElementById(
+          "finalPrize"
+        ).textContent = `${prize.toLocaleString("pl-PL")} zł`;
+        document.getElementById("gameOverMessage").textContent = message;
+      }
+
+      // Initialize speech synthesis voices
+      window.speechSynthesis.onvoiceschanged = () => {
+        speechSynthesis.getVoices();
+      };
+
+      // Update million counter on page load
+      window.addEventListener("DOMContentLoaded", () => {
+        updateMillionCounter();
+      });
+    </script>
+  </body>
+</html>
