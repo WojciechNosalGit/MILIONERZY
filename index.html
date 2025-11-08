@@ -607,9 +607,10 @@
 </head>
 <body>
     <div class="game-container">
+        <button class="saves-btn" id="removeCodeBtn" onclick="removeCodeFromGame()" title="Usuń kod z aktywnego zapisu" style="display: none; position: absolute; top: 10px; left: 10px; z-index: 1001;">🔓 Usuń kod</button>
+        
         <div class="header">
-            <button class="saves-btn" onclick="showSaves()" title="Zarządzaj zapisami">💾 Zapisy</button>
-            <button class="saves-btn" id="removeCodeBtn" onclick="removeCodeFromGame()" title="Usuń kod z aktywnego zapisu" style="display: none; margin-left: 10px;">🔓 Usuń kod</button>
+            <button class="saves-btn" onclick="showSaves()" title="Zarządzaj zapisami" style="position: absolute; top: 60px; left: 10px;">💾 Zapisy</button>
             <div class="million-counter" id="millionCounter">
                 🏆 Miliony: <span id="millionCount">0</span>
             </div>
@@ -762,7 +763,7 @@
                 { question: "Który ocean jest największy?", answers: ["Atlantycki", "Indyjski", "Spokojny", "Arktyczny"], correct: 2 },
                 { question: "Jaki owoc jest żółty i wygięty?", answers: ["Jabłko", "Banan", "Pomarańcza", "Gruszka"], correct: 1 },
                 { question: "Która planeta jest najbliżej Słońca?", answers: ["Wenus", "Ziemia", "Merkury", "Mars"], correct: 2 },
-                { question: "Ile sezon ma rok?", answers: ["2", "3", "4", "5"], correct: 2 },
+                { question: "Ile sezonów ma rok?", answers: ["2", "3", "4", "5"], correct: 2 },
                 { question: "Jaki kolor ma trawa?", answers: ["Żółty", "Niebieski", "Zielony", "Czerwony"], correct: 2 },
                 { question: "W którym mieście stoi wieża Eiffla?", answers: ["Londyn", "Berlin", "Paryż", "Rzym"], correct: 2 },
                 { question: "Ile kół ma rower?", answers: ["1", "2", "3", "4"], correct: 1 },
@@ -772,7 +773,7 @@
                 { question: "Który posiłek jemy rano?", answers: ["Obiad", "Kolacja", "Śniadanie", "Podwieczorek"], correct: 2 },
                 { question: "Jaki kolor ma niebo w pogodny dzień?", answers: ["Zielony", "Niebieski", "Czerwony", "Żółty"], correct: 1 },
                 { question: "Ile oczu ma człowiek?", answers: ["1", "2", "3", "4"], correct: 1 },
-                { question: "Który zwierzę miauczy?", answers: ["Pies", "Kot", "Krowa", "Koza"], correct: 1 },
+                { question: "Które zwierzę miauczy?", answers: ["Pies", "Kot", "Krowa", "Koza"], correct: 1 },
                 { question: "Co pada z nieba podczas deszczu?", answers: ["Śnieg", "Woda", "Grad", "Liście"], correct: 1 },
                 { question: "Ile kółek ma samochód?", answers: ["2", "3", "4", "5"], correct: 2 },
                 { question: "Jaki kolor ma cegła?", answers: ["Niebieski", "Czerwony", "Zielony", "Żółty"], correct: 1 },
